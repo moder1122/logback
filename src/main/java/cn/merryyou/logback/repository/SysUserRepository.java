@@ -16,4 +16,20 @@ public interface SysUserRepository extends MerryyouRepository<SysUser> {
      * @return
      */
     SysUser findByUsername(String username);
+
+    /**
+     * 手机号查找
+     * @param mobile
+     * @return
+     */
+    SysUser findByMobile(String mobile);
+
+    /**
+     * 用户名或手机号
+     * @param username
+     * @param mobile
+     * @return
+     */
+    SysUser findByUsernameOrMobile(String username,String mobile);
+
 }

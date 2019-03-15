@@ -111,6 +111,11 @@ public class SysUser implements Serializable, SocialUserDetails {
      */
     private String delFlag;
 
+    /**
+     * 手机号
+     */
+    private String mobile;
+
     @ManyToMany(cascade = CascadeType.MERGE)
     @JoinTable(name = "sys_role_user", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<SysRole> roles = new ArrayList<>();
@@ -144,6 +149,19 @@ public class SysUser implements Serializable, SocialUserDetails {
     public String getUserId() {
         //使用username 与社交账号的openid关联
         return username;
+    }
+
+    @Override
+    public int hashCode() {
+        return username.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object rhs) {
+        if (rhs instanceof SysUser) {
+            return username.equals(((SysUser) rhs).username);
+        }
+        return false;
     }
 
     @Override

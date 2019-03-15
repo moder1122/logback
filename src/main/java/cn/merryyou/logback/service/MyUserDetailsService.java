@@ -4,6 +4,7 @@ import cn.merryyou.logback.domain.SysUser;
 import cn.merryyou.logback.repository.SysUserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,6 +35,7 @@ public class MyUserDetailsService implements UserDetailsService, SocialUserDetai
 
     /**
      * 从数据库查询用户信息
+     *
      * @param username
      * @return
      * @throws UsernameNotFoundException
@@ -43,17 +45,19 @@ public class MyUserDetailsService implements UserDetailsService, SocialUserDetai
         log.info("【MyUserDetailsService】 loadUserByUsername 表单登录用户名  username={}", username);
         String permissions = "";
 
-        SysUser user = repository.findByUsername(username);
+        SysUser user = repository.findByUsernameOrMobile(username, username);
         if (user != null) {
-            permissions = sysMenuService.getPermissions(username);
+            permissions = sysMenuService.getPermissions(user.getUsername());
             log.info(permissions);
-            return new SysUser(username, user.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList(permissions));
+            return new SysUser(user.getUsername(), user.getPassword(), AuthorityUtils.commaSeparatedStringToAuthorityList(permissions));
+        }else{
+            throw new BadCredentialsException("用户名不存在！");
         }
-        return new SysUser(username, "", AuthorityUtils.commaSeparatedStringToAuthorityList(permissions));
     }
 
     /**
      * 社交登录查询用户信息
+     *
      * @param userId
      * @return
      * @throws UsernameNotFoundException
